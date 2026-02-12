@@ -11,38 +11,41 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleBookingAction = async () => {
+const handleBookingAction = async () => {
     setLoading(true);
     setErrorMessage(null);
 
+    // 1. Check current session
     const { data: { session } } = await supabase.auth.getSession();
 
-    if (session) {
-      const email = session.user.email;
-
-      if (!email?.endsWith("@up.edu.ph")) {
-        await supabase.auth.signOut();
-        setErrorMessage("Access restricted. Please use your UP email (@up.edu.ph).");
-        setLoading(false);
-        return;
-      }
-
+    // 2. If valid session exists, go to book
+    if (session?.user?.email?.endsWith("@up.edu.ph")) {
       router.push("/book");
-    } else {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: {
-          redirectTo: `${window.location.origin}/book`,
-          queryParams: {
-            hd: "up.edu.ph",
-          },
-        },
-      });
+      return;
+    }
 
-      if (error) {
-        setErrorMessage("Unable to sign in. Please try again.");
-        setLoading(false);
-      }
+    // 3. If session exists but is WRONG (not UP), kill it immediately.
+    if (session) {
+      await supabase.auth.signOut();
+    }
+
+    // 4. Trigger OAuth (Runs if no session OR if we just killed a bad session)
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/book`,
+        queryParams: {
+          hd: "up.edu.ph",
+          // 👇 CRITICAL: Forces Google to show the account chooser 
+          // instead of auto-logging in the default Chrome profile.
+          prompt: "select_account", 
+        },
+      },
+    });
+
+    if (error) {
+      setErrorMessage("Unable to sign in. Please try again.");
+      setLoading(false);
     }
   };
 

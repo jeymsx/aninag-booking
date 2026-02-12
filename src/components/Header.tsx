@@ -27,7 +27,8 @@ export default function Header() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.replace("/login");
+    // CHANGED: Redirect to Landing Page instead of Login
+    router.replace("/");
   };
 
   return (
@@ -42,7 +43,6 @@ export default function Header() {
             className="h-10 w-auto object-contain group-hover:opacity-80 transition-opacity"
           />
           
-          {/* UPDATED: Added 'hidden sm:flex' to hide this text block on mobile */}
           <div className="hidden sm:flex flex-col leading-none border-l border-gray-200 pl-3">
             <span className="text-lg font-serif font-bold text-[#013220] tracking-tight">
               Aninag <span className="text-[#800000]">2026</span>
@@ -55,14 +55,7 @@ export default function Header() {
 
         {/* Right: Nav + User + Logout */}
         <div className="flex items-center gap-4 sm:gap-6">
-        
-          {/* --- BOOK LINK --- */}
-          <Link 
-            href="/book"
-            className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#013220] hover:text-[#800000] transition-colors"
-          >
-            Book
-          </Link>
+     
 
           {/* --- PACKAGES LINK --- */}
           <Link 

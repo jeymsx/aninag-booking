@@ -1,54 +1,83 @@
+"use client";
+
+import { useState } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-
-
 export default function Home() {
-  
-  return (
-    <div className="min-h-screen bg-white flex flex-col relative selection:bg-[#FCC200] selection:text-[#700000]">
-      
-      {/* Optional: Very subtle top gradient to hint at the green brand color without overwhelming the white */}
-      <div className="absolute top-0 left-0 w-full h-64 bg-gradient-to-b from-[#013220]/5 to-transparent pointer-events-none" />
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
-      {/* Hero Section */}
+  const handleBookingAction = async () => {
+    setLoading(true);
+    const { data: { session } } = await supabase.auth.getSession();
+
+    if (session) {
+      router.push("/book");
+    } else {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/book`,
+        },
+      });
+      if (error) {
+        alert(error.message);
+        setLoading(false);
+      }
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-white flex flex-col relative overflow-hidden selection:bg-[#FCC200] selection:text-[#700000]">
+      
+      {/* --- SPIRITUAL GRADIENTS (Subtle Brand Presence) --- */}
+      <div className="absolute top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-[#013220]/5 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-[-10%] right-[-10%] w-[40vw] h-[40vw] bg-[#800000]/5 rounded-full blur-[100px] pointer-events-none" />
+
+      {/* --- HERO SECTION --- */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
         
-        <div className="text-center space-y-8 max-w-4xl w-full">
+        <div className="text-center space-y-10 max-w-2xl w-full">
           
-          {/* 1. The Wordmark Logo */}
-          <div className="relative animate-in fade-in zoom-in duration-1000 px-4">
-            {/* Make sure 'Wordmark.jpg' is in your /public folder.
-              I added a subtle mix-blend mode just in case the jpg has a background, 
-              though a transparent PNG works best here.
-            */}
+          {/* 1. The Wordmark Logo (Hero element) */}
+          <div className="relative animate-in fade-in zoom-in duration-1000">
             <img 
               src="/website-hero.png" 
               alt="Aninag 2026 Wordmark" 
-              className="w-full max-w-md md:max-w-xl mx-auto h-auto object-contain hover:scale-[1.01] transition-transform duration-500"
+              className="w-full h-auto object-contain hover:scale-[1.02] transition-transform duration-700 ease-out drop-shadow-sm"
             />
           </div>
 
-          {/* 2. Minimalist Text Content */}
+          {/* 2. Minimalist Text Label */}
           <div className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-200">
-            <h2 className="text-[#700000] font-bold tracking-[0.25em] uppercase text-xs md:text-sm">
+            <h2 className="text-[#700000] font-bold tracking-[0.3em] uppercase text-[10px] md:text-xs">
               Schedule Your Graduation Photoshoot
             </h2>
+            <div className="w-8 h-0.5 bg-[#FCC200] mx-auto rounded-full" />
           </div>
 
-          {/* 3. Call to Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
-            {/* Primary: Forest Green filled */}
-            <Link
-              href="/book"
-              className="px-10 py-3 bg-[#013220] text-white rounded-full font-bold tracking-wide shadow-lg hover:bg-[#0a442e] hover:shadow-xl transition-all hover:-translate-y-0.5 min-w-[200px]"
+          {/* 3. Creative Centered Actions */}
+          <div className="flex flex-col sm:flex-row gap-5 justify-center items-center pt-6 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-300">
+            
+            {/* Primary: Deep Green with Motion */}
+            <button
+              onClick={handleBookingAction}
+              disabled={loading}
+              className="px-12 py-4 bg-[#013220] text-white rounded-full font-bold text-sm tracking-wide shadow-xl hover:shadow-[#013220]/20 hover:bg-[#0a442e] transition-all active:scale-95 disabled:opacity-70 min-w-[220px] flex items-center justify-center gap-3"
             >
-              Book Your Session
-            </Link>
+               {loading ? (
+                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+               ) : (
+                 "Book Your Session"
+               )}
+            </button>
 
-            {/* Secondary: Clean Outline */}
+            {/* Secondary: Clean & Airy */}
             <Link
-              href="/packages"  // <--- Update this link
-              className="px-10 py-3 border border-gray-200 text-gray-500 rounded-full font-medium tracking-wide hover:border-[#700000] hover:text-[#700000] transition-all bg-white min-w-[200px]"
+              href="/packages"
+              className="px-12 py-4 border border-gray-100 text-gray-400 rounded-full font-bold text-sm tracking-wide hover:border-[#700000] hover:text-[#700000] hover:bg-[#700000]/5 transition-all min-w-[220px]"
             >
               View Packages
             </Link>
@@ -57,27 +86,15 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Footer Branding - Minimalist & Centered */}
-      <footer className="py-10 text-center space-y-4">
-        {/* Decorative Gold Dash */}
-        <div className="w-12 h-1 bg-[#FCC200] mx-auto rounded-full opacity-80" />
-        
-        <div className="flex justify-center items-center gap-6 text-[10px] md:text-xs font-bold tracking-widest uppercase text-[#700000]/70">
-           <span className="flex items-center gap-1">
-             {/* Facebook Icon SVG */}
-             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-             /aninag2026
-           </span>
-           <span className="flex items-center gap-1">
-             {/* Instagram/Mail Icon SVG */}
-             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12.713l-11.985-9.713h23.97l-11.985 9.713zm0 2.574l-12-9.725v15.438h24v-15.438l-12 9.725z"/></svg>
-             aninag2026@gmail.com
-           </span>
+      {/* --- FOOTER --- */}
+      <footer className="py-12 text-center relative z-10">
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex justify-center items-center gap-8 text-[9px] font-bold tracking-[0.2em] uppercase text-gray-300">
+             <span className="hover:text-[#700000] transition-colors cursor-default">UP Manila CAS</span>
+             <span className="w-1 h-1 bg-[#FCC200] rounded-full" />
+             <span className="hover:text-[#700000] transition-colors cursor-default">Batch 2026</span>
+          </div>
         </div>
-
-        <p className="text-gray-300 text-[10px] uppercase tracking-[0.3em]">
-          Official Graduation Portraiture
-        </p>
       </footer>
     </div>
   );

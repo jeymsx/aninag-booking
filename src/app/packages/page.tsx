@@ -1,11 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import Header from "@/components/Header"; // Import your shared header
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import Link from "next/link";
 
-// SETUP:
-// Keep using the 'lookbook' folder as requested.
-// Ensure 10-12 square photos exist in '/public/lookbook/'
+
 const totalPhotos = 12;
 const photos = Array.from({ length: totalPhotos }, (_, i) => ({
   id: i + 1,
@@ -15,6 +14,18 @@ const photos = Array.from({ length: totalPhotos }, (_, i) => ({
 
 export default function PackagesPage() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [backPath, setBackPath] = useState("/"); // Default to landing
+
+  useEffect(() => {
+    // Determine the back path based on auth state
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        setBackPath("/book");
+      } else {
+        setBackPath("/");
+      }
+    });
+  }, []);
 
   const prevSlide = () => {
     const isFirst = currentIndex === 0;
@@ -29,13 +40,22 @@ export default function PackagesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col selection:bg-[#FCC200] selection:text-[#700000]">
+    <div className="min-h-screen bg-white flex flex-col selection:bg-[#FCC200] selection:text-[#700000] relative">
       
-      {/* 1. Replaced custom Nav with your Global Header */}
-      <Header />
+      {/* --- NEW RETURN BUTTON --- */}
+      <Link 
+        href={backPath} 
+        className="absolute top-6 left-6 z-50 flex items-center gap-2 text-gray-400 hover:text-[#700000] transition-colors group"
+      >
+        <div className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center group-hover:border-[#700000] bg-white shadow-sm">
+           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        </div>
+        <span className="text-[10px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 transition-opacity -translate-x-2 group-hover:translate-x-0 duration-300">
+          {backPath === "/book" ? "Back to Booking" : "Return Home"}
+        </span>
+      </Link>
 
       {/* --- MAIN GALLERY --- */}
-      {/* Added pt-8 to account for the sticky header spacing */}
       <main className="flex-1 flex flex-col items-center justify-center py-8 px-4 relative">
         
         {/* Square Container */}

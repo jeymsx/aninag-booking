@@ -66,7 +66,7 @@ export default function BookingCalendar({ onBooked }: { onBooked?: () => void })
       <div className="w-full lg:w-2/3 space-y-6">
         <div className="flex p-1 bg-gray-100 rounded-xl mb-6">
           <button onClick={() => { setType("studio"); setSelectedDate(null); }} className={`flex-1 px-4 py-3 rounded-lg text-sm font-bold transition-all ${type === "studio" ? "bg-[#013220] text-white shadow-md" : "text-gray-500 hover:text-[#013220]"}`}>Studio Session</button>
-          <button onClick={() => { setType("location"); setSelectedDate(null); }} className={`flex-1 px-4 py-3 rounded-lg text-sm font-bold transition-all ${type === "location" ? "bg-[#013220] text-white shadow-md" : "text-gray-500 hover:text-[#013220]"}`}>School Shoot</button>
+          <button onClick={() => { setType("location"); setSelectedDate(null); }} className={`flex-1 px-4 py-3 rounded-lg text-sm font-bold transition-all ${type === "location" ? "bg-[#013220] text-white shadow-md" : "text-gray-500 hover:text-[#013220]"}`}>Campus Shoot</button>
         </div>
 
         <div className="flex items-center justify-between px-2">

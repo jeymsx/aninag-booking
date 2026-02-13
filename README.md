@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📸 Aninag 2026 Booking Portal
 
-## Getting Started
+Official Graduation Photoshoot Booking System  
+University of the Philippines Manila
 
-First, run the development server:
+The **Aninag 2026 Booking Portal** is a Progressive Web App (PWA) built to manage graduation photoshoot bookings for approximately 400 students.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+The system allows students to securely book, reschedule, and confirm their shoot schedule while giving the Editorial Board administrative control and live reporting access.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ✨ Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 🎓 For Students
+- UP Mail authentication (`@up.edu.ph` only)
+- Real-time slot availability
+- 24-hour reschedule window
+- Digital booking confirmation ticket
 
-## Learn More
+### 🛠️ For the Editorial Board
+- Student whitelist management
+- Manual data sync to Google Sheets
+- Live sync status monitoring
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🏗️ Tech Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Framework:** Next.js (App Router)
+- **Database & Auth:** Supabase (PostgreSQL + OAuth)
+- **Styling:** Tailwind CSS
+- **Automation:** GitHub Actions
+- **Deployment:** Vercel
+- **Integration:** Google Sheets API v4
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📅 Deployment
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This portal is deployed for the **March 2026 Graduation Photoshoot Cycle** and maintained by the Aninag 2026 Editorial Board.

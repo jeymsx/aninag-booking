@@ -14,7 +14,7 @@ export default function BookPage() {
   const [initialTime, setInitialTime] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [checkingAuth, setCheckingAuth] = useState(true);
-  
+  const [refreshKey, setRefreshKey] = useState(0);
   const [isReschedulingMode, setIsReschedulingMode] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -103,13 +103,16 @@ export default function BookPage() {
   // 5. ACTION: Booking Completed
   // We call this when the Calendar component successfully creates the new slot
   const handleBookingSuccess = () => {
-    setIsReschedulingMode(false);
-    isReschedulingRef.current = false; // <--- Unblock the fetcher
+  setIsReschedulingMode(false);
+  isReschedulingRef.current = false;
 
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) fetchBooking(session);
-    });
-  };
+  // 2. Increment the key to trigger a refetch in the child component
+  setRefreshKey(prev => prev + 1);
+
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    if (session) fetchBooking(session);
+  });
+};
 
   if (loading || checkingAuth) {
     return (
@@ -308,6 +311,7 @@ export default function BookPage() {
 
           <div className="bg-white p-6 md:p-10 rounded-[2.5rem] shadow-xl border border-gray-100">
             <BookingCalendar
+              refreshKey={refreshKey}
               isRescheduling={isReschedulingMode}
               viewOnly={booking && !isReschedulingMode}
               onBooked={handleBookingSuccess}

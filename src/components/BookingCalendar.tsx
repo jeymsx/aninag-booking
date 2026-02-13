@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { refresh } from "next/cache";
 
 // --- HELPERS ---
 const getDaysInMonth = (year: number, month: number) => new Date(year, month + 1, 0).getDate();
@@ -14,11 +15,13 @@ type TimeSlot = { time: string; remaining: number; };
 export default function BookingCalendar({
   onBooked,
   isRescheduling,
-  viewOnly
+  viewOnly,
+  refreshKey = 0
 }: {
   onBooked?: () => void,
   isRescheduling?: boolean,
   viewOnly?: boolean
+  refreshKey?: number
 })
 {
   const [type, setType] = useState<"studio" | "location">("studio");
@@ -49,12 +52,12 @@ export default function BookingCalendar({
   useEffect(() => {
     setSelectedDate(null); setSelectedTime(null); setSlots([]);
     fetch(`/api/availability?type=${type}`).then((res) => res.json()).then(setAvailability);
-  }, [type]);
+  }, [type, refreshKey]);
 
   useEffect(() => {
     if (!selectedDate) return;
     fetch(`/api/slots?type=${type}&date=${selectedDate}`).then((res) => res.json()).then(setSlots);
-  }, [selectedDate, type]);
+  }, [selectedDate, type, refreshKey]);
 
   // --- CALENDAR GRID SETUP ---
   const year = 2026;

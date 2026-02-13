@@ -196,16 +196,18 @@ const handleForceSync = async () => {
             <div className="flex flex-col items-end gap-2">
             <div className="flex items-center gap-3">
                 <button 
-                onClick={handleForceSync}
-                disabled={isSyncing}
-                className={`px-6 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-sm border flex items-center gap-2 ${
-                    isSyncing ? "bg-gray-100 text-gray-400 border-gray-200" : "bg-white text-[#013220] border-gray-100 hover:bg-gray-50 active:scale-95"
-                }`}
+                    onClick={handleForceSync}
+                    disabled={isSyncing}
+                    className={`px-6 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-sm border flex items-center gap-2 
+                    ${isSyncing 
+                        ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed" 
+                        : "bg-white text-[#013220] border-gray-100 hover:bg-gray-50 hover:shadow-md hover:border-gray-200 active:scale-95 cursor-pointer"
+                    }`}
                 >
-                {isSyncing ? (
-                    <span className="w-3 h-3 border-2 border-[#013220]/20 border-t-[#013220] rounded-full animate-spin" />
-                ) : "📊"}
-                {isSyncing ? "Syncing..." : "Sync to Google Sheets"}
+                    {isSyncing ? (
+                        <span className="w-3 h-3 border-2 border-[#013220]/20 border-t-[#013220] rounded-full animate-spin" />
+                    ) : "📊"}
+                    {isSyncing ? "Syncing..." : "Sync to Google Sheets"}
                 </button>
                 <button 
                 onClick={() => router.push("/")} 

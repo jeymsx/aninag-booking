@@ -62,7 +62,7 @@ export default function Header() {
             href="/packages"
             className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-[#013220] hover:text-[#800000] transition-colors"
           >
-            Packages
+            Services
           </Link>
 
           {email && (

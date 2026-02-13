@@ -18,6 +18,37 @@ export default function AdminDashboard() {
   const [whitelistSearch, setWhitelistSearch] = useState("");
   const [msg, setMsg] = useState("");
   const router = useRouter();
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncMsg, setSyncMsg] = useState(""); // Dedicated sync message state
+  const [lastSynced, setLastSynced] = useState<string | null>(null);
+
+const handleForceSync = async () => {
+  setIsSyncing(true);
+  try {
+    const res = await fetch('/api/sync', { method: 'POST' });
+    if (res.ok) {
+      const now = new Date().toISOString();
+      
+      // 💾 Save the timestamp to Supabase so all admins see it
+      await supabase
+        .from("app_metadata")
+        .update({ last_synced_at: now })
+        .eq("id", "google_sheets_sync");
+
+      setLastSynced(new Date(now).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      setSyncMsg("Sync Success: Google Sheet updated.");
+    } else {
+      setSyncMsg("Sync Failed: Check GitHub PAT.");
+    }
+  } catch (err) {
+    setSyncMsg("Sync Error: Network issue.");
+  }
+  
+  setTimeout(() => {
+    setIsSyncing(false);
+    setSyncMsg("");
+  }, 10000);
+};
 
   useEffect(() => {
     const checkAdmin = async () => {
@@ -57,15 +88,29 @@ export default function AdminDashboard() {
     );
   }, [whitelistSearch, whitelist]);
 
-  const fetchData = async () => {
-    const { data } = await supabase
-      .from("bookings")
-      .select("*")
-      .eq("status", "Confirmed") 
-      .order("date", { ascending: true })
-      .order("time", { ascending: true });
-    if (data) setBookings(data);
-  };
+    const fetchData = async () => {
+    // Fetch Bookings (existing code)
+    const { data: bookingData } = await supabase
+        .from("bookings")
+        .select("*")
+        .eq("status", "Confirmed") 
+        .order("date", { ascending: true });
+    if (bookingData) setBookings(bookingData);
+
+    // 🕒 NEW: Fetch the global sync time from the database
+    const { data: metaData } = await supabase
+        .from("app_metadata")
+        .select("last_synced_at")
+        .eq("id", "google_sheets_sync")
+        .single();
+        
+    if (metaData?.last_synced_at) {
+        setLastSynced(new Date(metaData.last_synced_at).toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+        }));
+    }
+    };
 
   const fetchWhitelist = async () => {
     const { data } = await supabase
@@ -140,12 +185,91 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-gray-50 p-6 md:p-12 selection:bg-[#FCC200] selection:text-[#800000]">
       <div className="max-w-7xl mx-auto space-y-12">
         
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
+        {/* --- HEADER --- */}
+        <header className="flex flex-col gap-8">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
             <h1 className="text-4xl font-serif font-bold text-[#013220]">Aninag EB Portal</h1>
             <p className="text-gray-400 text-xs uppercase tracking-widest mt-1 font-bold">Photoshoot Management</p>
-          </div>
-          <button onClick={() => router.push("/")} className="px-6 py-2 border border-gray-200 rounded-full text-xs font-bold text-gray-400 hover:text-[#800000] bg-white shadow-sm">Exit Dashboard</button>
+            </div>
+            
+            <div className="flex flex-col items-end gap-2">
+            <div className="flex items-center gap-3">
+                <button 
+                onClick={handleForceSync}
+                disabled={isSyncing}
+                className={`px-6 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-sm border flex items-center gap-2 ${
+                    isSyncing ? "bg-gray-100 text-gray-400 border-gray-200" : "bg-white text-[#013220] border-gray-100 hover:bg-gray-50 active:scale-95"
+                }`}
+                >
+                {isSyncing ? (
+                    <span className="w-3 h-3 border-2 border-[#013220]/20 border-t-[#013220] rounded-full animate-spin" />
+                ) : "📊"}
+                {isSyncing ? "Syncing..." : "Sync to Google Sheets"}
+                </button>
+                <button 
+                onClick={() => router.push("/")} 
+                className="px-6 py-3 border border-gray-200 rounded-2xl text-[10px] font-bold text-gray-400 hover:text-[#800000] hover:border-[#800000] transition-all bg-white shadow-sm uppercase tracking-widest"
+                >
+                Exit
+                </button>
+            </div>
+
+            {lastSynced && (
+                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-[0.1em] pr-2">
+                Global Last Update: <span className="text-[#013220]">{lastSynced}</span>
+                </p>
+            )}
+            </div>
+        </div>
+
+        {/* --- SYNC NOTIFICATION CARD --- */}
+        {syncMsg && (
+            (() => {
+            const isError = syncMsg.toLowerCase().includes("failed") || syncMsg.toLowerCase().includes("error");
+            const isSuccess = syncMsg.toLowerCase().includes("success");
+            
+            return (
+                <div className="animate-in fade-in slide-in-from-top-4 duration-500 bg-white p-6 rounded-[2.5rem] shadow-xl border border-gray-100 flex items-center justify-between group">
+                <div className="flex items-center gap-6">
+                    {/* Status Icon Indicator */}
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-colors ${
+                    isError ? "bg-red-50" : isSuccess ? "bg-green-50" : "bg-amber-50"
+                    }`}>
+                    {isError ? (
+                        <span className="text-xl">⚠️</span>
+                    ) : isSuccess ? (
+                        <span className="text-xl">✅</span>
+                    ) : (
+                        <span className="relative flex h-3 w-3">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FCC200] opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-3 w-3 bg-[#FCC200]"></span>
+                        </span>
+                    )}
+                    </div>
+
+                    <div>
+                    <h4 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">
+                        {isError ? "System Alert" : isSuccess ? "Network Success" : "Process Initialized"}
+                    </h4>
+                    <p className={`text-sm font-serif font-bold ${isError ? "text-red-900" : "text-[#013220]"}`}>
+                        {syncMsg.split(": ")[1] || syncMsg}
+                    </p>
+                    </div>
+                </div>
+
+                <button 
+                    onClick={() => setSyncMsg("")} 
+                    className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-50 text-gray-300 hover:text-gray-600 transition-all"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                </button>
+                </div>
+            );
+            })()
+        )}
         </header>
 
         {/* --- MANAGEMENT CONTROLS --- */}

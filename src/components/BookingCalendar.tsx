@@ -327,6 +327,7 @@ export default function BookingCalendar({
                     <option value="Medium Glass to Glass Frame Package D">Medium Glass to Glass Frame Package D</option>
                     <option value="Large Matted Frame Package E">Large Matted Frame Package E</option>
                     <option value="Large Glass to Glass Package F">Large Glass to Glass Package F</option>
+                    <option value="Digital Faculty Package">Digital Faculty Package</option>
                   </select>
                 </div>
 
@@ -346,6 +347,9 @@ export default function BookingCalendar({
                     </option>
                     <option value="Coming in with makeup done">
                       Coming in with makeup done
+                    </option>
+                    <option value="Not availing hair & makeup services">
+                      I will not avail hair & makeup services
                     </option>
                   </select>
                 </div>

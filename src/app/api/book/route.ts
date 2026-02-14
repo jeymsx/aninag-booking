@@ -50,18 +50,34 @@ export async function POST(req: Request) {
     if (action === "reschedule") {
       const { data: existing } = await supabaseAdmin
         .from("bookings")
-        .select("id")
+        .select("id, initial_booking_at")
         .eq("user_id", user.id)
         .eq("status", "Confirmed")
         .single();
 
-      if (existing) {
-        // We set synced: false so the Cron job knows to update this in Google Sheets
-        await supabaseAdmin
-          .from("bookings")
-          .update({ status: "Cancelled", synced: false })
-          .eq("id", existing.id);
+      if (!existing) {
+        return NextResponse.json({
+          success: false,
+          message: "No active booking found.",
+        });
       }
+
+      // 🔒 BACKEND 24-HOUR ENFORCEMENT
+      const firstTime = new Date(existing.initial_booking_at).getTime();
+      const now = Date.now();
+
+      if (now - firstTime > 24 * 60 * 60 * 1000) {
+        return NextResponse.json(
+          { success: false, message: "Reschedule window expired." },
+          { status: 403 }
+        );
+      }
+
+      // ⚠️ Cancel only after 24h check passes
+      await supabaseAdmin
+        .from("bookings")
+        .update({ status: "Cancelled", synced: false })
+        .eq("id", existing.id);
     } else {
       const { count } = await supabaseAdmin
         .from("bookings")

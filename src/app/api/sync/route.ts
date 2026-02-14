@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST() {
   const GITHUB_PAT = process.env.GITHUB_PAT;
-  const OWNER = "shutacccax"; // Your GitHub username
+  const OWNER = "jeymsx"; // Your GitHub username
   const REPO = "aninag-booking"; // Your exact repository name
   const WORKFLOW_ID = "sync.yml"; // The filename from Step 3
 

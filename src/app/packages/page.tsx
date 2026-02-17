@@ -232,17 +232,42 @@ export default function ServicesPage() {
                   const uniqueId = `${catIdx}-${qIdx}`;
                   const isOpen = openFaq === uniqueId;
                   return (
-                    <div key={uniqueId} className={`transition-all duration-500 rounded-xl ${isOpen ? "bg-white shadow-xl shadow-gray-200/40" : "bg-transparent hover:bg-white/50"}`}>
-                      <button onClick={() => toggleFaq(uniqueId)} className="w-full flex justify-between items-center text-left p-6 group">
-                        <span className={`font-serif font-bold text-xl transition-colors ${isOpen ? "text-[#700000]" : "text-gray-800 group-hover:text-[#700000]"}`}>{item.q}</span>
-                        <div className={`relative w-6 h-6 flex items-center justify-center transition-transform duration-500 ${isOpen ? "rotate-[225deg]" : ""}`}>
-                          <div className="absolute w-full h-[2px] bg-[#700000] rounded-full" />
-                          <div className="absolute h-full w-[2px] bg-[#700000] rounded-full" />
+                    <div
+                      key={uniqueId}
+                      className={`transition-all duration-500 rounded-xl ${
+                        isOpen ? "bg-white shadow-xl shadow-gray-200/40" : "bg-transparent hover:bg-white/50"
+                      }`}
+                    >
+                      <button
+                        onClick={() => toggleFaq(uniqueId)}
+                        className="w-full flex justify-between items-start text-left p-6 group"
+                      >
+                        <span
+                          className={`font-serif font-bold text-xl transition-colors pr-4 flex-1 ${
+                            isOpen ? "text-[#700000]" : "text-gray-800 group-hover:text-[#700000]"
+                          }`}
+                        >
+                          {item.q}
+                        </span>
+                        
+                        {/* Fixed-size container for the plus icon */}
+                        <div className="flex-shrink-0 mt-1">
+                          <div
+                            className={`relative w-6 h-6 flex items-center justify-center transition-transform duration-500 ${
+                              isOpen ? "rotate-[225deg]" : ""
+                            }`}
+                          >
+                            <div className="absolute w-full h-[2px] bg-[#700000] rounded-full" />
+                            <div className="absolute h-full w-[2px] bg-[#700000] rounded-full" />
+                          </div>
                         </div>
                       </button>
+                      
                       {isOpen && (
                         <div className="px-6 pb-8 -mt-2 animate-in fade-in slide-in-from-top-3 duration-500">
-                          <div className="text-gray-600 leading-relaxed text-[16px] max-w-[90%]">{item.a}</div>
+                          <div className="text-gray-600 leading-relaxed text-[16px] max-w-[90%]">
+                            {item.a}
+                          </div>
                         </div>
                       )}
                     </div>

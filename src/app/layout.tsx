@@ -34,6 +34,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
+        // Add suppressHydrationWarning here to ignore extension-injected attributes
+        suppressHydrationWarning
         className={`${playfair.variable} ${inter.variable} font-sans antialiased bg-white text-gray-900`}
       >
         <AuthProvider>{children}</AuthProvider>

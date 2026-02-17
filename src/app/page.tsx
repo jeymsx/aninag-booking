@@ -9,7 +9,7 @@ import FloatingBooking from "@/components/FloatingBooking";
 import { ChevronDown, X, Calendar } from "lucide-react"; 
 import { GALLERY_PHOTOS } from "@/lib/photos";
 
-// --- SUB-COMPONENT FOR INDIVIDUAL IMAGE LOADING STATE ---
+// --- UPDATED SUB-COMPONENT WITH MOBILE BORDER FIX ---
 const GalleryItem = ({ 
   photo, 
   onClick 
@@ -23,6 +23,11 @@ const GalleryItem = ({
     <div 
       onClick={() => onClick(photo.src)}
       className="relative break-inside-avoid mb-2 sm:mb-4 overflow-hidden rounded-lg cursor-zoom-in group bg-gray-100"
+      // 🟢 FIX: This style forces mobile browsers to respect border-radius during transforms
+      style={{ 
+        WebkitMaskImage: "-webkit-radial-gradient(white, black)",
+        maskImage: "radial-gradient(white, black)"
+      }}
     >
       {/* SKELETON LOADER: Visible only while loading */}
       {isLoading && (
@@ -35,7 +40,7 @@ const GalleryItem = ({
         width={500} 
         height={500} 
         // Fade in effect when loaded
-        className={`w-full h-auto object-cover transition-all duration-700 group-hover:scale-105 ${
+        className={`w-full h-auto object-cover rounded-lg transition-all duration-700 group-hover:scale-105 ${
           isLoading ? "opacity-0 scale-105" : "opacity-100 scale-100"
         }`}
         sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"

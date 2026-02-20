@@ -86,7 +86,7 @@ What's on your mind?`
                 </div>
                 
                 <div>
-                <h3 className="font-serif italic text-2xl leading-none tracking-tight">Aninag Ask</h3>
+                <h3 className="font-serif italic text-2xl leading-none tracking-tight">Ask Aninag</h3>
                 <div className="flex items-center gap-1.5 mt-1">
                     <span className="relative flex h-2 w-2">
                     {/* Ping effect - Added pointer-events-none */}
